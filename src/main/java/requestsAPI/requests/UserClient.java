@@ -9,6 +9,7 @@ public class UserClient {
 
     private static final String LOGIN_PATH = "https://stellarburgers.nomoreparties.site/api/auth/login";
     private static final String DELETE_PATH = "https://stellarburgers.nomoreparties.site/api/auth/user";
+    private static final String CREATE_PATH = "https://stellarburgers.nomoreparties.site/api/auth/register";
 
     //Логин пользователя для получения токена авторизации
     public String getAccessToken(User user){
@@ -20,6 +21,16 @@ public class UserClient {
                 .post(LOGIN_PATH);
        String accessToken = response.then().statusCode(200).extract().path("accessToken");
        return accessToken;
+    }
+
+    //Создание пользователя для тестирования входа
+    public Response createUser(User user){
+        return given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(user)
+                .when()
+                .post(CREATE_PATH);
     }
 
     //Удаление пользователя

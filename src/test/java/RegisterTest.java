@@ -1,3 +1,4 @@
+import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,16 @@ public class RegisterTest {
     @Parameterized.Parameters
     public static Object[][]getData(){
         return new Object[][]{
+                //Пароль 5 символов
+                {"Nikolay", "pochta4321@example.com", "12345"},
+                //Пароль 6 символов
+                {"Александр", "sasha97@example.com", "123456"},
+                //Пароль 7 символов
+                {"Vasiliy", "vasya76@example.com", "1234567"},
+                //Пароль 2 символа
+                {"Vitaly", "vitaly@example.com", "12"},
+                //Пароль 10 символов
+                {"Daria", "Daria34@example.com", "1234567890"}
 
         };
     }
@@ -49,13 +60,19 @@ public class RegisterTest {
 
     }
     @Test
+    @DisplayName("Регистрация нового пользователя")
     public void registerUserTest(){
         mainPage.clickPersonalArea();
         loginPage.clickRegisterRedirect();
         registrationPage.expectationName();
         registrationPage.registerUser(name, email, password);
         registrationPage.clickRegister();
-        loginPage.expectedInput();
+        if(password.length() < 6) {
+            //Ожидание уведомления "Некорректный пароль"
+            registrationPage.expectationIncorrectPassword();
+        }else {
+            loginPage.expectedInput();
+        }
     }
 
     @After
@@ -63,8 +80,10 @@ public class RegisterTest {
         //Закрыть браузер
         driver.quit();
         //Удалить пользователя с помощью API запроса
-        user = new User(name, email, password);
-        userClient = new UserClient();
-        userClient.deleteUser(user);
+        if (password.length() >= 6) {
+            user = new User(name, email, password);
+            userClient = new UserClient();
+            userClient.deleteUser(user);
+        }
     }
 }
