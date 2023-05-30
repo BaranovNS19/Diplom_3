@@ -22,6 +22,8 @@ public class PersonalArea {
     //Нажать "Выход"
     @Step("Нажать \"Выход\"")
     public void clickExit(){
+        new WebDriverWait(driver, 3)
+                .until(ExpectedConditions.elementToBeClickable(exit));
         driver.findElement(exit).click();
     }
 
