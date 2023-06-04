@@ -1,3 +1,4 @@
+import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
@@ -11,6 +12,9 @@ import page.MainPage;
 import page.RegistrationPage;
 import requestsAPI.model.User;
 import requestsAPI.requests.UserClient;
+import setting.SettingProperty;
+
+import java.io.IOException;
 
 @RunWith(Parameterized.class)
 public class RegisterTest {
@@ -24,6 +28,7 @@ public class RegisterTest {
     private String name;
     private String email;
     private String password;
+    private SettingProperty settingProperty;
 
     public RegisterTest(String name, String email, String password) {
         this.name = name;
@@ -33,27 +38,29 @@ public class RegisterTest {
 
     @Parameterized.Parameters
     public static Object[][]getData(){
+        Faker faker = new Faker();
         return new Object[][]{
                 //Пароль 5 символов
-                {"Nikolay", "pochta4321@example.com", "12345"},
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.regexify("[A-Za-z0-9]{5}")},
                 //Пароль 6 символов
-                {"Александр", "sasha97@example.com", "123456"},
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.regexify("[A-Za-z0-9]{6}")},
                 //Пароль 7 символов
-                {"Vasiliy", "vasya76@example.com", "1234567"},
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.regexify("[A-Za-z0-9]{7}")},
                 //Пароль 2 символа
-                {"Vitaly", "vitaly@example.com", "12"},
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.regexify("[A-Za-z0-9]{2}")},
                 //Пароль 10 символов
-                {"Daria", "Daria34@example.com", "1234567890"}
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.regexify("[A-Za-z0-9]{10}")}
 
         };
     }
 
 
     @Before
-    public void openBrowser(){
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\nikol\\Documents\\webdriver\\chromedriver.exe");
+    public void openBrowser() throws IOException {
+        settingProperty = new SettingProperty();
+        System.setProperty("webdriver.chrome.driver", settingProperty.getDriverPath());
         driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/");
+        driver.get(settingProperty.getPropertyUrl());
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registrationPage = new RegistrationPage(driver);

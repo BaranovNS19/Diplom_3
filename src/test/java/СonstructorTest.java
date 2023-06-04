@@ -5,16 +5,21 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import page.MainPage;
+import setting.SettingProperty;
+
+import java.io.IOException;
 
 public class СonstructorTest {
     private WebDriver driver;
     private MainPage mainPage;
+    private SettingProperty settingProperty;
 
     @Before
-    public void openBrowser() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\nikol\\Documents\\webdriver\\chromedriver.exe");
+    public void openBrowser() throws IOException {
+        settingProperty = new SettingProperty();
+        System.setProperty("webdriver.chrome.driver", settingProperty.getDriverPath());
         driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/");
+        driver.get(settingProperty.getPropertyUrl());
         mainPage = new MainPage(driver);
     }
 

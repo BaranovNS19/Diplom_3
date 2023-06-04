@@ -1,3 +1,4 @@
+import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
@@ -9,6 +10,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import page.*;
 import requestsAPI.model.User;
 import requestsAPI.requests.UserClient;
+import setting.SettingProperty;
+
+import java.io.IOException;
 
 @RunWith(Parameterized.class)
 public class LoginTest {
@@ -25,6 +29,7 @@ public class LoginTest {
     private RegistrationPage registrationPage;
     private RestorePassword restorePassword;
     private PersonalArea personalArea;
+    private SettingProperty settingProperty;
 
     public LoginTest(String name, String email, String password, String xpathMain, String xpathLogin) {
         this.name = name;
@@ -36,20 +41,22 @@ public class LoginTest {
 
     @Parameterized.Parameters
     public static Object[][]getData(){
+        Faker faker = new Faker();
         return new Object[][]{
                 //Вход через кнопку "Войти в аккаунт
-                {"Nikolay", "qdfdsswew@example.com", "34582913", "//button[text()='Войти в аккаунт']", "//a[text()='Зарегистрироваться']"},
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.internet().password(), "//button[text()='Войти в аккаунт']", "//a[text()='Зарегистрироваться']"},
                 //Вход через кнопку "Личный кабинет"
-                {"Sergey", "sergey783@example.com", "238475621", "//p[text()='Личный Кабинет']", "//a[text()='Восстановить пароль']"}
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.internet().password(), "//p[text()='Личный Кабинет']", "//a[text()='Восстановить пароль']"}
 
         };
     }
 
     @Before
-    public void openBrowser(){
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\nikol\\Documents\\webdriver\\chromedriver.exe");
+    public void openBrowser() throws IOException {
+        settingProperty = new SettingProperty();
+        System.setProperty("webdriver.chrome.driver", settingProperty.getDriverPath());
         driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/");
+        driver.get(settingProperty.getPropertyUrl());
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registrationPage = new RegistrationPage(driver);

@@ -1,3 +1,4 @@
+import com.github.javafaker.Faker;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
@@ -11,6 +12,9 @@ import page.MainPage;
 import page.PersonalArea;
 import requestsAPI.model.User;
 import requestsAPI.requests.UserClient;
+import setting.SettingProperty;
+
+import java.io.IOException;
 
 @RunWith(Parameterized.class)
 public class RedirectPageTest {
@@ -23,6 +27,7 @@ public class RedirectPageTest {
     private User user;
     private UserClient userClient;
     private PersonalArea personalArea;
+    private SettingProperty settingProperty;
 
     public RedirectPageTest(String name, String email, String password) {
         this.name = name;
@@ -32,17 +37,19 @@ public class RedirectPageTest {
 
     @Parameterized.Parameters
     public static Object[][]getData(){
+        Faker faker = new Faker();
         return new Object[][]{
-                {"Nikolay", "testUser4321@example.com", "3456287213"}
+                {faker.name().firstName(), faker.internet().emailAddress(), faker.internet().password()}
 
         };
     }
 
     @Before
-    public void openBrowser(){
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\nikol\\Documents\\webdriver\\chromedriver.exe");
+    public void openBrowser() throws IOException {
+        settingProperty = new SettingProperty();
+        System.setProperty("webdriver.chrome.driver", settingProperty.getDriverPath());
         driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/");
+        driver.get(settingProperty.getPropertyUrl());
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         userClient = new UserClient();
